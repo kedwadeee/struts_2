@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <constant name="struts.custom.i18n.resources" value="ApplicationResource" />
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+    <constant name="struts.ui.theme" value="simple" />
+
+    <package name="myPackage" extends="struts-default">
+
+
+        <!--<interceptors>
+            <interceptor name="MyInterceptor" class="training.lab3.MyInterceptor" />
+
+            <interceptor-stack name="MyInterceptorStack">
+                <interceptor-ref name="MyInterceptor" />
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>-->
+
+        <default-action-ref name="index" />
+
+    </package>
+        <package name="training.web.hello" namespace="/" extends="struts-default">
+            <interceptors>
+                <interceptor name="MyInterceptor" class="training.lab3.interceptor.MyInterceptor" />
+                <interceptor-stack name="MyInterceptorStack">
+                    <interceptor-ref name="MyInterceptor" />
+                    <interceptor-ref name="defaultStack" />
+                </interceptor-stack>
+            </interceptors>
+            <action name="hello_init" class="training.web.hello.HelloAction" method="init">
+                <interceptor-ref name="MyInterceptorStack" />
+                <result name="initPage">/WEB-INF/jsp/lab1/hello.jsp</result>
+            </action>
+            <action name="hello_sayHi" class="training.web.hello.HelloAction" method="sayHi">
+                <interceptor-ref name="MyInterceptorStack" />
+                <result name="resultPage">/WEB-INF/jsp/lab1/hello_result.jsp</result>
+            </action>
+
+        </package>
+    <package name="training.web.login" namespace="/login" extends="training.web.hello">
+        <action name="login_init" class="training.web.login.LoginAction" method="loginInit">
+            <interceptor-ref name="MyInterceptorStack" />
+            <result name="login_main">/WEB-INF/jsp/lab2/login.jsp</result>
+        </action>
+        <action name="login_login" class="training.web.login.LoginAction" method="login">
+            <result name="login_success">/WEB-INF/jsp/lab2/login_success.jsp</result>
+            <result name="login_fail">/WEB-INF/jsp/lab2/login_fail.jsp</result>
+        </action>
+    </package>
+
+    <package name="training.lab4.TestResultAction " namespace="/lab4" extends="struts-default"  strict-method-invocation="false">
+
+        <global-results>
+            <result name="login">/WEB-INF/jsp/lab4/login.jsp</result>
+        </global-results>
+
+        <action name="testResultAction_*" class="training.lab4.TestResultAction" method="{1}">
+            <result name="menuPage">/WEB-INF/jsp/lab4/menu.jsp</result>
+            <result type="redirect" name="redirectToGoogle">http://www.google.co.th</result>
+            <result type="redirectAction" name="redirectToHelloAction">
+                <param name="namespace">/</param>
+                <param name="actionName">hello_init</param>
+            </result>
+        </action>
+        <action name="login_login" class="training.web.login.LoginAction" method="login">
+            <result name="login_success">/WEB-INF/jsp/lab2/login_success.jsp</result>
+            <result name="login_fail">/WEB-INF/jsp/lab2/login_fail.jsp</result>
+        </action>
+    </package>
+
+
+    <package name="training.lab5.taglib" namespace="/lab5" extends="training.web.hello " strict-method-invocation="false">
+        <action name="testTaglibAction_*" class="training.lab5.taglib.TestTaglibAction" method="{1}">
+            <result name="showListPage">/WEB-INF/jsp/lab5/showList.jsp</result>
+            <result name="showSelectedUserId">/WEB-INF/jsp/lab5/showSelectedUserId.jsp</result>
+        </action>
+    </package>
+
+    <package name="training.lab6.scope" namespace="/lab6" extends="struts-default" strict-method-invocation="false">
+
+    <interceptors>
+        <interceptor-stack name="TestScopeInterceptorStack">
+            <interceptor-ref name="scope">
+                <param name="session">users</param>
+            </interceptor-ref>
+        </interceptor-stack>
+    </interceptors>
+        <action name="testScopeAction_start" class="training.lab6.scope.TestScopeAction" method="start" >
+            <interceptor-ref name="TestScopeInterceptorStack">
+                <param name="scope.type">start</param>
+            </interceptor-ref>
+            <result name="redirectToInit" type="redirectAction">testScopeAction_init</result>
+        </action>
+        <action name="testScopeAction_*" class="training.lab6.scope.TestScopeAction" method="{1}">
+            <interceptor-ref name="TestScopeInterceptorStack" />
+            <result name="redirectToInit" type="redirectAction">testScopeAction_init</result>
+            <result name="afterInit">/WEB-INF/jsp/lab6/afterInit.jsp</result>
+            <result name="afterSubmit">/WEB-INF/jsp/lab6/afterSubmit.jsp</result>
+            <result name="afterEnd">/WEB-INF/jsp/lab6/afterEnd.jsp</result>
+        </action>
+
+        <action name="testScopeAction_end" class="training.lab6.scope.TestScopeAction" method="end" >
+            <interceptor-ref name="TestScopeInterceptorStack">
+                <param name="scope.type">end</param>
+            </interceptor-ref>
+            <result name="afterEnd">/WEB-INF/jsp/lab6/afterEnd.jsp</result>
+        </action>
+    </package>
+
+    <package name="training.lab7.token" namespace="/lab7" extends="struts-default" strict-method-invocation="false" >
+        <interceptors>
+            <interceptor-stack name="testTokenInterceptorStack">
+                <interceptor-ref name="token">
+                    <param name="includeMethods">submit</param>
+                </interceptor-ref>
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+        <action name="testToken_*" class="training.lab7.token.TestTokenAction" method="{1}">
+            <interceptor-ref name="testTokenInterceptorStack" />
+            <result name="afterInit">/WEB-INF/jsp/lab7/afterInit.jsp</result>
+            <result name="afterSubmit">/WEB-INF/jsp/lab7/afterSubmit.jsp</result>
+            <result
+                    name="invalid.token">/WEB-INF/jsp/lab7/invalidToken.jsp</result>
+        </action>
+    </package>
+
+</struts>
